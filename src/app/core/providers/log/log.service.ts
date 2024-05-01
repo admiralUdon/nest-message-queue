@@ -115,9 +115,7 @@ export class LogService extends Logger {
         this._winstonLogger.warn(message, optionalParams);
     }
 
-    debug(message: string, optionalParams?: any) {    
-        console.log("this.context", this.context);
-            
+    debug(message: string, optionalParams?: any) {                
         if (optionalParams === undefined) {
             super.debug(message);
         } else {
