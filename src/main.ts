@@ -9,7 +9,9 @@ async function bootstrap() {
 
     // Check if .env file exists
     if (!existsSync('.env')) {
-        throw new Error('The .env file is missing. Please make sure it exists.');
+        const error = 'The .env file is missing. Please make sure it exists.';
+        Logger.error(error, "MainApplication");
+        throw new Error(error);
     }
 
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -64,7 +66,6 @@ async function bootstrap() {
     });
 }
 
-bootstrap().catch(error => {
-    Logger.error(error, "MainApplication");
+bootstrap().catch(() => {
     process.exit(1);
 });
