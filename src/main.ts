@@ -58,7 +58,7 @@ async function bootstrap() {
         const document = SwaggerModule.createDocument(app, config);
         const context = process.env.SERVER_CONTEXT ? (process.env.SERVER_CONTEXT + '/swagger') : 'swagger';
         SwaggerModule.setup(context, app, document);
-        Logger.log(`[MainApplication] Swagger configured on http://localhost:3000/${context}`, "MainApplication");
+        Logger.log(`Swagger configured on http://localhost:3000/${context}`, "MainApplication");
     }
     
     await app.listen(SERVER_PORT, SERVER_ADDRESS, () => {
