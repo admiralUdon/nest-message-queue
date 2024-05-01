@@ -2,8 +2,8 @@
  * 
  * Please update this so that we can track the latest version.
  * 
- * Author           : Afiq Ammar (afiqammar.azhar@teras.com.my)
- * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
+ * Author           : Afiq Ammar (afiqammar.azhar[at]teras.com.my)
+ * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
  * Last Updated     : 30 April 2024
  * 
  * **/

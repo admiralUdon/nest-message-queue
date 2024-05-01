@@ -2,8 +2,8 @@
  * 
  * Please update this so that we can track the latest version.
  * 
- * Author           : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
- * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
+ * Author           : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
+ * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
  * Last Updated     : 30 April 2024
  * 
  * **/
@@ -15,11 +15,11 @@ import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class LogMiddleware implements NestMiddleware {
-
+    
     /**
      * Constructor
      */
-    
+
     constructor(
         private _logService: LogService
     ) {

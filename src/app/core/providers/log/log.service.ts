@@ -2,8 +2,8 @@
  * 
  * Please update this so that we can track the latest version.
  * 
- * Author           : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
- * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
+ * Author           : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
+ * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
  * Last Updated     : 1 May 2024
  * 
  * **/
