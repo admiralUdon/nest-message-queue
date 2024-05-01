@@ -4,7 +4,7 @@
  * 
  * Author           : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
  * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz@teras.com.my)
- * Last Updated     : 30 April 2024
+ * Last Updated     : 1 May 2024
  * 
  * **/
 
@@ -93,7 +93,7 @@ export class LogService extends Logger {
         if (optionalParams === undefined) {
             super.log(message);
         } else {
-            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : optionalParams;
+            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : { optionalParams };
             super.log(message, optionalParams);
         }
 
@@ -109,7 +109,7 @@ export class LogService extends Logger {
         if (optionalParams === undefined) {
             super.warn(message);
         } else {
-            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : optionalParams;
+            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : { optionalParams };
             super.warn(message, optionalParams);
         }
         this._winstonLogger.warn(message, optionalParams);
@@ -121,7 +121,7 @@ export class LogService extends Logger {
         if (optionalParams === undefined) {
             super.debug(message);
         } else {
-            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : optionalParams;
+            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : { optionalParams };
             super.debug(message, optionalParams);
         }
         this._winstonLogger.debug(message, optionalParams);
@@ -131,7 +131,7 @@ export class LogService extends Logger {
         if (optionalParams === undefined) {
             super.verbose(message);
         } else {
-            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : optionalParams;
+            optionalParams = typeof optionalParams === 'string' ? { message, optionalParams } : { optionalParams };
             super.verbose(message, optionalParams);
         }
         this._winstonLogger.verbose(message, optionalParams);

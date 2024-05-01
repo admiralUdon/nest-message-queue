@@ -3,8 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from 'app.module';
+import { existsSync } from 'fs-extra';
 
 async function bootstrap() {
+
+    // Check if .env file exists
+    if (!existsSync('.env')) {
+        throw new Error('The .env file is missing. Please make sure it exists.');
+    }
 
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
     const SERVER_ADDRESS = process.env.SERVER_ADDRESS || "127.0.0.1";
@@ -57,4 +63,8 @@ async function bootstrap() {
         Logger.log(`NestJS app is running on http://${SERVER_ADDRESS}:${SERVER_PORT}`, "MainApplication");
     });
 }
-bootstrap();
+
+bootstrap().catch(error => {
+    Logger.error(error, "MainApplication");
+    process.exit(1);
+});

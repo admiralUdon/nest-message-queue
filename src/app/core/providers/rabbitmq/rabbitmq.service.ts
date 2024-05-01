@@ -25,10 +25,39 @@ export class RabbitMQService {
     /**
      * Constructor
      */
+    
     constructor(
     ) {
         this.connect();
     }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    async publish(message: {}, routingKey: string) {
+        const messageObjStr = JSON.stringify(message);
+        try {
+            const publishMessage = await this.channel.publish(this.config.exchange, routingKey, Buffer.from(messageObjStr), {persistent: true});
+            return { status: publishMessage };
+        } catch (error) {            
+            return { status: false, error: error };
+        }
+    }
+
+    async consume(queue: string, callback: (message: any) => void): Promise<void> {
+        await this.channel.assertQueue(queue);
+        this.channel.consume(queue, (message) => {
+          if (message !== null) {
+            callback(JSON.parse(message.content.toString()));
+            this.channel.ack(message);
+          }
+        });
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
 
     private async connect() {
 
@@ -76,24 +105,5 @@ export class RabbitMQService {
         setTimeout(() => this.connect(), 1000); // Attempt to reconnect after 1 second
     }
 
-    async publish(message: {}, routingKey: string) {
-        const messageObjStr = JSON.stringify(message);
-        try {
-            const publishMessage = await this.channel.publish(this.config.exchange, routingKey, Buffer.from(messageObjStr), {persistent: true});
-            return { status: publishMessage };
-        } catch (error) {            
-            return { status: false, error: error };
-        }
-    }
-
-    async consume(queue: string, callback: (message: any) => void): Promise<void> {
-        await this.channel.assertQueue(queue);
-        this.channel.consume(queue, (message) => {
-          if (message !== null) {
-            callback(JSON.parse(message.content.toString()));
-            this.channel.ack(message);
-          }
-        });
-    }
 }
 

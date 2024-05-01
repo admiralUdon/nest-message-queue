@@ -5,11 +5,10 @@ import { resolve } from "path";
 @Injectable()
 export class CoreService implements OnApplicationBootstrap {
 
-    private readonly logger = new Logger(CoreService.name);
-
     /**
      * Constructor
      */
+    
     constructor(
     ) {}
 
