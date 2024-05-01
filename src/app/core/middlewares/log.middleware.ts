@@ -15,12 +15,20 @@ import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class LogMiddleware implements NestMiddleware {
+
+    /**
+     * Constructor
+     */
     
     constructor(
         private _logService: LogService
     ) {
         this._logService.registerClassName(LogMiddleware.name);
     }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Middleware
+    // -----------------------------------------------------------------------------------------------------
 
     use(req: Request, res: Response, next: NextFunction) {
 
