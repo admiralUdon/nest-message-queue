@@ -38,9 +38,9 @@ async function bootstrap() {
     app.enableCors();
 
     /**
-     * Disable Logging
+     * Disable Debugging
      */
-    if (process.env.FILE_LOGGING !== "true") {
+    if (process.env.ENABLE_DEBUGGING !== "true") {
         app.useLogger(false); 
     }
 

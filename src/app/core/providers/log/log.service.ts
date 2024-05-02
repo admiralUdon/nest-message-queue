@@ -4,7 +4,7 @@
  * 
  * Author           : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
  * Last Contributor : Ahmad Miqdaad (ahmadmiqdad.aziz[at]teras.com.my)
- * Last Updated     : 1 May 2024
+ * Last Updated     : 2 May 2024
  * 
  * **/
 
@@ -62,6 +62,7 @@ export class LogService extends Logger {
 
             // Write logs
             this._winstonLogger = winston.createLogger({
+                silent: process.env.FILE_LOGGING === "false" ?? true,
                 level: 'debug', // Default level
                 format: winston.format.combine(
                     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }), // Add timestamp
