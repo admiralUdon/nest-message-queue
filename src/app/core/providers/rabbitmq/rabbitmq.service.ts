@@ -9,14 +9,14 @@
  * **/
 
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import * as amqp from 'amqplib';
+import { connect, ChannelModel, Channel, ConsumeMessage, Options } from 'amqplib';
 import { rabbitMQConfig } from 'app/config/rabbitmq.config';
 import { LogService } from '../log/log.service';
 
 interface RabbitMQConnection {
     name: string;
-    conn: amqp.Connection;
-    channel: amqp.Channel;
+    connection: ChannelModel;
+    channel: Channel;
     config: any;
 }
 
@@ -62,7 +62,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         // Gracefully close all connections
         for (const [name, entry] of this.connections) {
             try {
-                if (entry.conn) await entry.conn.close();
+                if (entry.connection) await entry.connection.close();
                 this.logger.debug(`Closed connection [${name}]`);
             } catch (error) {
                 this.logger.error(`Error closing [${name}]: ${(error as Error).message}`);
@@ -81,12 +81,12 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         connectionName: string = 'default',
     ) {
         const connEntry = this.connections.get(connectionName) ?? this.connections.get('default');
-        if (!connEntry || !connEntry.conn) return { status: false, error: 'No connection' };
+        if (!connEntry || !connEntry.connection) return { status: false, error: 'No connection' };
 
         try {
             // Re-use or create the publishing channel
             if (!connEntry.channel) {
-                connEntry.channel = await connEntry.conn.createChannel();
+                connEntry.channel = await connEntry.connection.createChannel();
                 connEntry.channel.on('error', (err) => {
                     this.logger.error(`Publish channel error: ${err.message}`);
                     connEntry.channel = null; // Force recreation on next publish
@@ -137,13 +137,13 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         if (!exists) this.consumers.push({ queue, onMessage, connectionName });
 
         const connection = this.connections.get(connectionName);
-        if (!connection || !connection.conn) {
+        if (!connection || !connection.connection) {
             this.logger.warn(`[${connectionName}] Connection not ready. Queue "${queue}" will bind once connected.`);
             return;
         }
 
         try {
-            const channel = await connection.conn.createChannel();
+            const channel = await connection.connection.createChannel();
 
             // Handle channel errors so they don't crash the app
             channel.on('close', () => {
@@ -151,7 +151,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
 
                 // Check if the connection is still alive before trying to restart
                 const currentConn = this.connections.get(connectionName);
-                if (currentConn && currentConn.conn) {
+                if (currentConn && currentConn.connection) {
                     setTimeout(() => this.consume(queue, onMessage, connectionName), 60000);
                 }
             });
@@ -226,23 +226,23 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private async connect(name: string, config: any) {
+    private async connect(name: string, config: Options.Connect & { exchange: string; type: string; queueType: string; prefetch: number }) {
         // Save config for retry
         this._cachedConfigs.set(name, config);
         if (this.connections.has(name)) return;
 
-        const { url, user, password, port, vhost } = config;
-        if (!url) {
+        const { hostname, username, password, port, vhost, protocol } = config;
+        if (!hostname) {
             this.logger.debug(`RabbitMQ [${name}] connection skipped: URL is not configured`);
             return;
         }
 
         try {
-            const connStr = `amqps://${user}:${encodeURIComponent(password)}@${url}:${port}${vhost ? `/${vhost}` : ''}`;
-            const safeConnStr = `amqps://${user}:<hidden>@${url}:${port}${vhost ? `/${vhost}` : ''}`;
+            const connStr = `${protocol}://${username}:${encodeURIComponent(password)}@${hostname}:${port}${vhost ? `/${vhost}` : ''}`;
+            const safeConnStr = `${protocol}://${username}:<hidden>@${hostname}:${port}${vhost ? `/${vhost}` : ''}`;
             this.logger.log(`Connecting to RabbitMQ [${name}] at ${safeConnStr}`);
 
-            const conn = await amqp.connect(connStr);
+            const conn = await connect(connStr);
 
             // Clear the timer
             if (this._reconnectTimers.has(name)) {
@@ -254,7 +254,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
             conn.on('close', (msg) => this.handleClose(name, msg));
 
             this._retryAttempts.delete(name);
-            this.connections.set(name, { name, conn, channel: null, config });
+            this.connections.set(name, { name, connection: conn, channel: null, config });
             this.logger.debug(`RabbitMQ [${name}] ${safeConnStr} connected`);
 
             await this.rebindConsumers(name);
@@ -265,8 +265,8 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     }
 
     private async handleRetry(
-        channel: amqp.Channel,
-        msg: amqp.ConsumeMessage,
+        channel: Channel,
+        msg: ConsumeMessage,
         retryExchange: string,
         maxRetries = -1
     ) {

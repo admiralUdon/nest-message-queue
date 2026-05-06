@@ -1,7 +1,10 @@
-export const rabbitMQConfig = () => ({
-    url: process.env.RABBITMQ_URL,
-    port: process.env.RABBITMQ_PORT,
-    user: process.env.RABBITMQ_USER,
+import { Options } from "amqplib";
+
+export const rabbitMQConfig = (): Options.Connect & { exchange: string; type: string; queueType: string; prefetch: number } => ({
+    protocol: process.env.RABBITMQ_PROTOCOL || 'amqp',
+    hostname: process.env.RABBITMQ_HOSTNAME,
+    port: parseInt(process.env.RABBITMQ_PORT) || 5672,
+    username: process.env.RABBITMQ_USERNAME,
     password: process.env.RABBITMQ_PASSWORD,
     vhost: process.env.RABBITMQ_VHOST || '/',
     exchange: process.env.RABBITMQ_EXCHANGE,
