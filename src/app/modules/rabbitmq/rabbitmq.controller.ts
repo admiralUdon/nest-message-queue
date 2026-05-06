@@ -33,7 +33,7 @@ export class RabbitMQController {
 
         try {
 
-            const message = "hello world";
+            const message = "this is from miqdaad";
             this._logService.debug("Publish message to RabbitMQ", { id: "service-a-rmq-demo", message});
             const rmqResult = await this._serviceA.publishRMQ({ message });
     
@@ -52,7 +52,7 @@ export class RabbitMQController {
             return response;
             
         } catch (error) {
-            throw new DefaultHttpException(error);
+            throw new DefaultHttpException(error as any);
         }
         
     }
